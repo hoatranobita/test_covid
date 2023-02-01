@@ -15,7 +15,8 @@ df=df.rename(columns={'iso_code':'Countrycode','location':'Country'})
 df['date']=pd.to_datetime(df['date'], format='%Y-%m-%d')
 df['Mortality Rate']=df['total_deaths']/df['total_cases']*100
 df['Death Rate']=df['total_deaths']/df['population']*100
-
+df_country=df.groupby(['Countrycode','Country']).sum().reset_index()
+yesterdays_date=df['date'].max()
 
 app = dash.Dash(external_stylesheets=[dbc.themes.CYBORG],
                 meta_tags=[{'name': 'viewport',
