@@ -13,15 +13,9 @@ url="https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owi
 df=pd.read_csv(url)
 df=df.rename(columns={'iso_code':'Countrycode','location':'Country'})
 df['date']=pd.to_datetime(df['date'], format='%Y-%m-%d')
-
-#df['Len'] = df['Countrycode'].str.len()
-#df = df[df.Len < 4]
-date=df['date'].dt.strftime('%Y-%m-%d')
 df['Mortality Rate']=df['total_deaths']/df['total_cases']*100
 df['Death Rate']=df['total_deaths']/df['population']*100
 
-df_country=df.groupby(['Countrycode','Country']).sum().reset_index()
-yesterdays_date=df['date'].max()
 
 app = dash.Dash(external_stylesheets=[dbc.themes.CYBORG],
                 meta_tags=[{'name': 'viewport',
@@ -165,7 +159,9 @@ def update_graph(selected_country):
 def display_animated_graph(selection):
     if selection == 'Trajectory of Pandemic':
         df_country = pd.pivot_table(df, ('total_cases', 'new_cases', 'total_deaths'),
-                                    index=['Countrycode', 'Country', 'date'], aggfunc=np.sum).reset_index()
+                                    index=['date','Countrycode', 'Country'], aggfunc=np.sum).reset_index()
+        df_country.sort_values(['date'], ascending=[True])
+        date = df_country['date'].dt.strftime('%Y-%m-%d')
         fig = px.choropleth(df_country, locations="Countrycode", color="total_cases",
                             hover_name="Country", animation_frame=date,
                             hover_data=df_country[['total_cases', 'new_cases', 'total_deaths']],
