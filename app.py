@@ -163,6 +163,7 @@ def display_animated_graph(selection):
         df_country = pd.pivot_table(df, ('total_cases', 'new_cases', 'total_deaths'),
                                     index=['date','Countrycode', 'Country'], aggfunc=np.sum).reset_index()
         df_country.sort_values(['date'], ascending=[True])
+        df_country = df_country[df_country['date'] > '2022-01-01']
         date = df_country['date'].dt.strftime('%Y-%m-%d')
         fig = px.choropleth(df_country, locations="Countrycode", color="total_cases",
                             hover_name="Country", animation_frame=date,
